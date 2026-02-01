@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconciliation Results</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'reconciliation_app/css/style.css' %}">
     <style>
         * {
             margin: 0;
@@ -518,9 +520,16 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        .csrf-token {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    {% csrf_token %}
+    <div class="csrf-token" id="csrfToken" data-token="{{ csrf_token }}"></div>
+    
     <div class="container">
         <div class="header">
             <h1>📊 Reconciliation Results</h1>
@@ -629,6 +638,9 @@
             hour: '2-digit',
             minute: '2-digit'
         });
+        
+        // Get CSRF token
+        const csrfToken = document.getElementById('csrfToken').dataset.token;
         
         // Get data from sessionStorage
         const data = JSON.parse(sessionStorage.getItem('reconciliationData'));
@@ -858,12 +870,7 @@
                 document.getElementById('loadingOverlay').style.display = 'flex';
                 
                 // Create download link
-                const link = document.createElement('a');
-                link.href = `/download_excel/${filename}`;
-                link.download = `reconciliation_report_${new Date().toISOString().slice(0,10)}.xlsx`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                window.location.href = `/download_excel/${filename}`;
                 
                 // Hide loading overlay after delay
                 setTimeout(() => {
@@ -875,22 +882,6 @@
                     setTimeout(() => {
                         notification.style.display = 'none';
                     }, 3000);
-                    
-                    // Clean up the file on server (optional)
-                    // You can uncomment this if you want automatic cleanup
-                    /*
-                    fetch(`/cleanup_excel/${filename}`, { 
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        console.log('Excel file cleaned up:', result);
-                    })
-                    .catch(error => console.error('Cleanup error:', error));
-                    */
                 }, 2000);
             } else {
                 alert('No Excel file available. Please upload files first.');

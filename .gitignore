@@ -1,6 +1,7 @@
-.venv
-.vscode
-.dist
-__pycache__/
-*.pyc
-*.pyo
+venv
+reconciliation\__pycache__
+reconciliation_app\__pycache__
+reconciliation_app\migrations\__pycache__
+reconciliation_app\reconciliation_logic.pyc
+reconciliation_app\views.pyc
+reconciliation_app\templates\reconciliation_app\__pycache__

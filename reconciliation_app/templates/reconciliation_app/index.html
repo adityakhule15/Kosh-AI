@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconciliation System - Upload Files</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'reconciliation_app/css/style.css' %}">
     <style>
         * {
             margin: 0;
@@ -263,6 +265,10 @@
             border-left: 4px solid #f44336;
         }
         
+        .csrf-token {
+            display: none;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -283,6 +289,9 @@
     </style>
 </head>
 <body>
+    {% csrf_token %}
+    <div class="csrf-token" id="csrfToken" data-token="{{ csrf_token }}"></div>
+    
     <div class="container">
         <div class="header">
             <h1>💰 Reconciliation System</h1>
@@ -346,6 +355,9 @@
     <script>
         let statementFile = null;
         let settlementFile = null;
+        
+        // Get CSRF token
+        const csrfToken = document.getElementById('csrfToken').dataset.token;
         
         // Initialize drag and drop
         document.querySelectorAll('.upload-box').forEach(box => {
@@ -471,11 +483,15 @@
             const formData = new FormData();
             formData.append('statement_file', statementFile);
             formData.append('settlement_file', settlementFile);
+            formData.append('csrfmiddlewaretoken', csrfToken);
             
             // Submit via fetch
-            fetch('/upload', {
+            fetch('/upload/', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
             })
             .then(response => response.json())
             .then(data => {
@@ -486,7 +502,7 @@
                     // Store data in sessionStorage
                     sessionStorage.setItem('reconciliationData', JSON.stringify(data));
                     // Redirect to results page
-                    window.location.href = '/results';
+                    window.location.href = '/results/';
                 } else {
                     showError(data.error || 'An error occurred during processing.');
                 }
@@ -507,3 +523,4 @@
     </script>
 </body>
 </html>
+
