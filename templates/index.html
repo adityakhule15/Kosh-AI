@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconciliation System - Upload Files</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .upload-section {
+            margin-bottom: 40px;
+        }
+        
+        .upload-box {
+            border: 3px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .upload-box:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .upload-box.drag-over {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .upload-text h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .upload-text p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .file-list {
+            margin-top: 20px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-icon {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .file-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .submit-section {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-submit:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .instructions {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 40px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .instructions li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #f44336;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header, .content {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-box {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Reconciliation System</h1>
+            <p>Upload your Statement and Settlement files for automated reconciliation</p>
+        </div>
+        
+        <div class="content">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="upload-section">
+                <div class="upload-box" id="statementUploadBox" onclick="document.getElementById('statementFile').click()">
+                    <div class="upload-icon">📋</div>
+                    <div class="upload-text">
+                        <h3>Upload Statement File</h3>
+                        <p>Click to upload or drag and drop Excel file (.xlsx, .xls)</p>
+                        <button class="btn btn-primary">Choose File</button>
+                    </div>
+                    <input type="file" id="statementFile" class="file-input" accept=".xlsx,.xls" onchange="handleFileSelect('statement', this.files[0])">
+                </div>
+                <div class="file-list" id="statementFileList"></div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-box" id="settlementUploadBox" onclick="document.getElementById('settlementFile').click()">
+                    <div class="upload-icon">📊</div>
+                    <div class="upload-text">
+                        <h3>Upload Settlement File</h3>
+                        <p>Click to upload or drag and drop Excel file (.xlsx, .xls)</p>
+                        <button class="btn btn-primary">Choose File</button>
+                    </div>
+                    <input type="file" id="settlementFile" class="file-input" accept=".xlsx,.xls" onchange="handleFileSelect('settlement', this.files[0])">
+                </div>
+                <div class="file-list" id="settlementFileList"></div>
+            </div>
+            
+            <div class="submit-section">
+                <button class="btn btn-submit" id="submitBtn" onclick="submitFiles()" disabled>
+                    🔄 Process Reconciliation
+                </button>
+            </div>
+            
+            <div class="instructions">
+                <h3>📝 Instructions:</h3>
+                <ul>
+                    <li>Upload both Statement and Settlement Excel files</li>
+                    <li>Files should be in .xlsx or .xls format</li>
+                    <li>System will process and reconcile transactions automatically</li>
+                    <li>Download marked Excel file with reconciliation results</li>
+                    <li>View detailed analysis in the results page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <h2>Processing Reconciliation...</h2>
+        <p>Please wait while we analyze your files</p>
+    </div>
+    
+    <script>
+        let statementFile = null;
+        let settlementFile = null;
+        
+        // Initialize drag and drop
+        document.querySelectorAll('.upload-box').forEach(box => {
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                box.classList.add('drag-over');
+            });
+            
+            box.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                box.classList.remove('drag-over');
+            });
+            
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                box.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    const type = box.id.includes('statement') ? 'statement' : 'settlement';
+                    handleFileSelect(type, file);
+                }
+            });
+        });
+        
+        function handleFileSelect(type, file) {
+            if (!file) return;
+            
+            // Validate file type
+            const validExtensions = ['.xlsx', '.xls'];
+            const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+            
+            if (!validExtensions.includes(fileExtension)) {
+                showError(`Invalid file type for ${type} file. Please upload Excel files (.xlsx, .xls) only.`);
+                return;
+            }
+            
+            // Validate file size (max 16MB)
+            if (file.size > 16 * 1024 * 1024) {
+                showError(`File too large for ${type} file. Maximum size is 16MB.`);
+                return;
+            }
+            
+            // Store file
+            if (type === 'statement') {
+                statementFile = file;
+                displayFile('statementFileList', file, 'statement');
+            } else {
+                settlementFile = file;
+                displayFile('settlementFileList', file, 'settlement');
+            }
+            
+            // Update submit button state
+            updateSubmitButton();
+        }
+        
+        function displayFile(elementId, file, type) {
+            const fileList = document.getElementById(elementId);
+            const fileSize = formatFileSize(file.size);
+            
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <div class="file-info">
+                        <span class="file-icon">${type === 'statement' ? '📋' : '📊'}</span>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${fileSize}</div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFile('${type}')">×</button>
+                </div>
+            `;
+        }
+        
+        function removeFile(type) {
+            if (type === 'statement') {
+                statementFile = null;
+                document.getElementById('statementFileList').innerHTML = '';
+                document.getElementById('statementFile').value = '';
+            } else {
+                settlementFile = null;
+                document.getElementById('settlementFileList').innerHTML = '';
+                document.getElementById('settlementFile').value = '';
+            }
+            updateSubmitButton();
+        }
+        
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = !(statementFile && settlementFile);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // Hide error after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function submitFiles() {
+            if (!statementFile || !settlementFile) {
+                showError('Please upload both files before submitting.');
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('statement_file', statementFile);
+            formData.append('settlement_file', settlementFile);
+            
+            // Submit via fetch
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading overlay
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+                if (data.success) {
+                    // Store data in sessionStorage
+                    sessionStorage.setItem('reconciliationData', JSON.stringify(data));
+                    // Redirect to results page
+                    window.location.href = '/results';
+                } else {
+                    showError(data.error || 'An error occurred during processing.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                showError('Upload failed. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+        
+        // Allow Enter key to submit when both files are uploaded
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && statementFile && settlementFile) {
+                submitFiles();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconciliation Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .btn-excel {
+            background-color: #217346;
+            color: white;
+        }
+        
+        .btn-excel:hover {
+            background-color: #1a5d38;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 115, 70, 0.3);
+        }
+        
+        .summary-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-card h3 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .summary-item {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-item.category-5 {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .summary-item.category-6 {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .summary-item.category-7 {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .filter-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-header h2 {
+            color: #333;
+            font-size: 1.8rem;
+        }
+        
+        .record-count {
+            background-color: #f0f4ff;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background-color: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .category-5-row {
+            background-color: #f1f8e9;
+        }
+        
+        .category-6-row {
+            background-color: #fffde7;
+        }
+        
+        .category-7-row {
+            background-color: #ffebee;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-matched {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-mismatch {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .status-unmatched {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .amount {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #4CAF50;
+        }
+        
+        .negative {
+            color: #f44336;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        
+        .no-data h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .excel-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .detailed-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            display: none;
+        }
+        
+        .detailed-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .file-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4ff 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .detailed-content {
+                padding: 20px;
+                max-height: 90vh;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Reconciliation Results</h1>
+            <p>Detailed analysis of matched and unmatched transactions</p>
+        </div>
+        
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="window.location.href='/'">
+                ← Back to Upload
+            </button>
+            <button class="btn btn-excel" onclick="downloadExcel()">
+                📊 Download Marked Excel
+            </button>
+            <button class="btn btn-secondary" onclick="exportToCSV()">
+                📥 Export CSV
+            </button>
+            <button class="btn btn-warning" onclick="window.print()">
+                🖨️ Print Report
+            </button>
+            <button class="btn btn-danger" onclick="clearData()">
+                🗑️ Clear Data
+            </button>
+        </div>
+        
+        <div id="summarySection" class="summary-section">
+            <!-- Summary will be populated by JavaScript -->
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTable('all')">All Transactions</button>
+            <button class="filter-btn" onclick="filterTable('category5')">✅ Category 5: Perfect Matches</button>
+            <button class="filter-btn" onclick="filterTable('category6')">⚠️ Category 6: Amount Mismatches</button>
+            <button class="filter-btn" onclick="filterTable('category7')">❌ Category 7: Unmatched</button>
+            <button class="filter-btn" onclick="filterTable('variance')">💰 Show Variances Only</button>
+        </div>
+        
+        <div class="results-section">
+            <div class="section-header">
+                <h2>Detailed Transaction Analysis</h2>
+                <div class="record-count" id="recordCount">0 records</div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Pin Number</th>
+                            <th>Classification</th>
+                            <th>Statement Amount (USD)</th>
+                            <th>Settlement Amount (USD)</th>
+                            <th>Variance</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="noData" class="no-data" style="display: none;">
+                <h3>No data available</h3>
+                <p>Please upload files to view reconciliation results.</p>
+                <button class="btn btn-primary" onclick="window.location.href='/'">
+                    ← Go to Upload Page
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Transaction Reconciliation System • Generated on <span id="currentDate"></span></p>
+            <p>For support or questions, please contact your system administrator.</p>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <h3>Processing Excel Download...</h3>
+        <p>Please wait while we generate the report</p>
+    </div>
+    
+    <!-- Excel Download Notification -->
+    <div class="excel-notification" id="excelNotification">
+        ✅ Excel file downloaded successfully!
+    </div>
+    
+    <!-- Detailed View Modal -->
+    <div class="detailed-view" id="detailedView">
+        <div class="detailed-content">
+            <button class="close-btn" onclick="closeDetailedView()">×</button>
+            <h2 id="detailTitle">Transaction Details</h2>
+            <div id="detailContent">
+                <!-- Detailed content will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Get data from sessionStorage
+        const data = JSON.parse(sessionStorage.getItem('reconciliationData'));
+        
+        if (!data || !data.success) {
+            document.getElementById('noData').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+        } else {
+            displayResults(data);
+        }
+        
+        function displayResults(data) {
+            // Display summary section
+            const summarySection = document.getElementById('summarySection');
+            
+            // Overall Summary Card
+            let summaryHTML = `
+                <div class="summary-card">
+                    <h3>📈 Overall Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-value">${data.total_records || 0}</div>
+                            <div class="summary-label">Total Transactions</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">${data.summary ? data.summary['Match Rate (%)'].toFixed(1) + '%' : '0%'}</div>
+                            <div class="summary-label">Match Rate</div>
+                        </div>
+            `;
+            
+            if (data.overall_totals) {
+                summaryHTML += `
+                        <div class="summary-item">
+                            <div class="summary-value">$${(data.overall_totals['Total Statement Amount (USD)'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="summary-label">Statement Total</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">$${(data.overall_totals['Total Settlement Amount (USD)'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="summary-label">Settlement Total</div>
+                        </div>
+                `;
+            }
+            
+            summaryHTML += `</div></div>`;
+            
+            // Category Summary Card
+            if (data.summary) {
+                summaryHTML += `
+                    <div class="summary-card">
+                        <h3>🏷️ Category Breakdown</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item category-5">
+                                <div class="summary-value">${data.summary['Category 5 - Perfect Matches'] || 0}</div>
+                                <div class="summary-label">Category 5: Perfect Matches</div>
+                            </div>
+                            <div class="summary-item category-6">
+                                <div class="summary-value">${data.summary['Category 6 - Amount Mismatches'] || 0}</div>
+                                <div class="summary-label">Category 6: Amount Mismatches</div>
+                            </div>
+                            <div class="summary-item category-7">
+                                <div class="summary-value">${data.summary['Total Category 7'] || 0}</div>
+                                <div class="summary-label">Category 7: Unmatched</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">$${(data.summary['Total Matched Amount'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="summary-label">Matched Amount</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Financial Summary Card
+            if (data.overall_totals) {
+                const variance = data.overall_totals['Overall Variance'] || 0;
+                const varianceClass = variance >= 0 ? 'positive' : 'negative';
+                const varianceSign = variance >= 0 ? '+' : '';
+                
+                summaryHTML += `
+                    <div class="summary-card">
+                        <h3>💰 Financial Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-value">$${(data.overall_totals['Total Statement Amount (USD)'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="summary-label">Total Statement</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">$${(data.overall_totals['Total Settlement Amount (USD)'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="summary-label">Total Settlement</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value ${varianceClass}">${varianceSign}$${Math.abs(variance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="summary-label">Overall Variance</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">$${(data.summary?.['Total Mismatch Variance'] || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                <div class="summary-label">Total Mismatch</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            summarySection.innerHTML = summaryHTML;
+            
+            // Display table
+            const tableBody = document.getElementById('tableBody');
+            const recordCount = document.getElementById('recordCount');
+            const reconciliationData = data.reconciliation_data || [];
+            
+            recordCount.textContent = `${reconciliationData.length} records`;
+            
+            reconciliationData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                // Determine row class based on classification
+                let rowClass = '';
+                if (item.Classification && item.Classification.includes('Category 5')) rowClass = 'category-5-row';
+                else if (item.Classification && item.Classification.includes('Category 6')) rowClass = 'category-6-row';
+                else if (item.Classification && item.Classification.includes('Category 7')) rowClass = 'category-7-row';
+                
+                row.className = rowClass;
+                row.dataset.index = index;
+                
+                // Format amounts
+                const formatAmount = (amount) => {
+                    if (amount === null || amount === undefined || isNaN(amount)) return '-';
+                    return `$${parseFloat(amount).toLocaleString('en-US', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    })}`;
+                };
+                
+                const stmtAmount = formatAmount(item.Statement_Amount_USD);
+                const settAmount = formatAmount(item.Settlement_Amount_USD);
+                
+                // Format variance
+                let varianceDisplay = '-';
+                let varianceClass = '';
+                if (item.Variance !== null && item.Variance !== undefined && !isNaN(item.Variance)) {
+                    const variance = parseFloat(item.Variance);
+                    varianceClass = variance >= 0 ? 'positive' : 'negative';
+                    const sign = variance >= 0 ? '+' : '';
+                    varianceDisplay = `<span class="amount ${varianceClass}">${sign}$${Math.abs(variance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
+                }
+                
+                // Get status badge
+                let statusBadge = '';
+                if (item.Status === 'Matched') {
+                    statusBadge = '<span class="status-badge status-matched">Matched</span>';
+                } else if (item.Status === 'Mismatch') {
+                    statusBadge = '<span class="status-badge status-mismatch">Mismatch</span>';
+                } else if (item.Status === 'Unmatched') {
+                    statusBadge = '<span class="status-badge status-unmatched">Unmatched</span>';
+                }
+                
+                row.innerHTML = `
+                    <td><strong>${item.Pin_Number || ''}</strong></td>
+                    <td>${item.Classification || item.Category || ''}</td>
+                    <td class="amount">${stmtAmount}</td>
+                    <td class="amount">${settAmount}</td>
+                    <td>${varianceDisplay}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="filter-btn" onclick="viewDetails(${index})" style="padding: 5px 10px; font-size: 0.8rem;">
+                            👁️ View Details
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Store data for detailed view
+            window.reconciliationData = data;
+        }
+        
+        // Filter function
+        function filterTable(category) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const rows = document.querySelectorAll('#tableBody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                if (category === 'all') {
+                    row.style.display = '';
+                    visibleCount++;
+                } else if (category === 'category5' && row.classList.contains('category-5-row')) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else if (category === 'category6' && row.classList.contains('category-6-row')) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else if (category === 'category7' && row.classList.contains('category-7-row')) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else if (category === 'variance') {
+                    const varianceCell = row.cells[4];
+                    const varianceText = varianceCell.textContent;
+                    if (varianceText !== '-' && !varianceText.includes('$0.00')) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('recordCount').textContent = `${visibleCount} records (filtered)`;
+        }
+        
+        // Excel download function
+        function downloadExcel() {
+            const data = JSON.parse(sessionStorage.getItem('reconciliationData'));
+            if (data && data.excel_path) {
+                // Extract just the filename from the path
+                const filename = data.excel_path.split('/').pop();
+                
+                // Show loading overlay
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = `/download_excel/${filename}`;
+                link.download = `reconciliation_report_${new Date().toISOString().slice(0,10)}.xlsx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Hide loading overlay after delay
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    
+                    // Show success notification
+                    const notification = document.getElementById('excelNotification');
+                    notification.style.display = 'block';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 3000);
+                    
+                    // Clean up the file on server (optional)
+                    // You can uncomment this if you want automatic cleanup
+                    /*
+                    fetch(`/cleanup_excel/${filename}`, { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log('Excel file cleaned up:', result);
+                    })
+                    .catch(error => console.error('Cleanup error:', error));
+                    */
+                }, 2000);
+            } else {
+                alert('No Excel file available. Please upload files first.');
+            }
+        }
+        
+        // CSV export function
+        function exportToCSV() {
+            const data = JSON.parse(sessionStorage.getItem('reconciliationData'));
+            if (!data) {
+                alert('No data available. Please upload files first.');
+                return;
+            }
+            
+            // Create CSV content
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Add headers
+            if (data.reconciliation_data && data.reconciliation_data.length > 0) {
+                const headers = ['Pin_Number', 'Classification', 'Statement_Amount_USD', 'Settlement_Amount_USD', 'Variance', 'Status', 'Category'];
+                csvContent += headers.join(",") + "\r\n";
+                
+                // Add data rows
+                data.reconciliation_data.forEach(row => {
+                    const rowData = [
+                        row.Pin_Number || '',
+                        row.Classification || '',
+                        row.Statement_Amount_USD || '',
+                        row.Settlement_Amount_USD || '',
+                        row.Variance || '',
+                        row.Status || '',
+                        row.Classification ? row.Classification.split(':')[0].trim() : ''
+                    ];
+                    
+                    // Escape quotes and wrap in quotes if contains comma
+                    const escapedRow = rowData.map(cell => {
+                        if (cell === null || cell === undefined) return '';
+                        const cellStr = String(cell);
+                        if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                            return '"' + cellStr.replace(/"/g, '""') + '"';
+                        }
+                        return cellStr;
+                    });
+                    
+                    csvContent += escapedRow.join(",") + "\r\n";
+                });
+                
+                // Create download link
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `reconciliation_export_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        // View detailed transaction
+        function viewDetails(index) {
+            const data = JSON.parse(sessionStorage.getItem('reconciliationData'));
+            if (!data || !data.reconciliation_data || !data.reconciliation_data[index]) return;
+            
+            const item = data.reconciliation_data[index];
+            
+            document.getElementById('detailTitle').textContent = `Transaction Details - Pin: ${item.Pin_Number}`;
+            
+            const detailContent = document.getElementById('detailContent');
+            
+            // Format values for display
+            const formatValue = (value) => {
+                if (value === null || value === undefined || value === '' || value === 'null') return 'N/A';
+                return value;
+            };
+            
+            const formatCurrency = (value) => {
+                if (value === null || value === undefined || isNaN(value)) return 'N/A';
+                return `$${parseFloat(value).toLocaleString('en-US', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                })}`;
+            };
+            
+            const formatDate = (dateStr) => {
+                if (!dateStr || dateStr === 'N/A') return 'N/A';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return dateStr;
+                }
+            };
+            
+            detailContent.innerHTML = `
+                <div class="file-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Pin Number</div>
+                            <div class="info-value">${formatValue(item.Pin_Number)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Category</div>
+                            <div class="info-value">${formatValue(item.Category)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Classification</div>
+                            <div class="info-value">${formatValue(item.Classification)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">
+                                <span class="${item.Status === 'Matched' ? 'status-matched' : item.Status === 'Mismatch' ? 'status-mismatch' : 'status-unmatched'}" style="padding: 4px 12px; border-radius: 15px; display: inline-block;">
+                                    ${formatValue(item.Status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                        📋 Statement File Details
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Date</div>
+                            <div class="info-value">${formatDate(item.Statement_Date)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Amount (USD)</div>
+                            <div class="info-value amount">${formatCurrency(item.Statement_Amount_USD)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Type</div>
+                            <div class="info-value">${formatValue(item.Statement_Type)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Reference</div>
+                            <div class="info-value" style="font-family: 'Courier New', monospace; font-size: 0.9rem;">${formatValue(item.Statement_Reference)}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                        📊 Settlement File Details
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Date</div>
+                            <div class="info-value">${formatDate(item.Settlement_Date)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Amount (USD)</div>
+                            <div class="info-value amount">${formatCurrency(item.Settlement_Amount_USD)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Reference</div>
+                            <div class="info-value" style="font-family: 'Courier New', monospace; font-size: 0.9rem;">${formatValue(item.Settlement_Reference)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Variance</div>
+                            <div class="info-value">
+                                ${item.Variance !== null && !isNaN(item.Variance) ? 
+                                    `<span class="amount ${item.Variance >= 0 ? 'positive' : 'negative'}" style="font-size: 1.2rem;">
+                                        ${item.Variance >= 0 ? '+' : ''}${formatCurrency(item.Variance)}
+                                    </span>` : 
+                                    'N/A'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <h4 style="color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                        📝 Reconciliation Notes
+                    </h4>
+                    <p style="color: #555; line-height: 1.6;">
+                        ${item.Classification || 'No additional notes available.'}
+                    </p>
+                    ${item.Variance !== null && !isNaN(item.Variance) && Math.abs(item.Variance) > 0.01 ? 
+                        `<p style="color: ${item.Variance > 0 ? '#4CAF50' : '#f44336'}; margin-top: 10px; font-weight: 600;">
+                            ⚠️ ${item.Variance > 0 ? 'Settlement amount is higher' : 'Statement amount is higher'} by ${formatCurrency(Math.abs(item.Variance))}
+                        </p>` : 
+                        ''}
+                </div>
+            `;
+            
+            document.getElementById('detailedView').style.display = 'flex';
+        }
+        
+        // Close detailed view
+        function closeDetailedView() {
+            document.getElementById('detailedView').style.display = 'none';
+        }
+        
+        // Clear data function
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                sessionStorage.removeItem('reconciliationData');
+                window.location.href = '/';
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S to export CSV
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                exportToCSV();
+            }
+            // Ctrl+E to export Excel
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                downloadExcel();
+            }
+            // Ctrl+P to print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+            // Escape to go back or close modal
+            if (e.key === 'Escape') {
+                if (document.getElementById('detailedView').style.display === 'flex') {
+                    closeDetailedView();
+                } else {
+                    window.location.href = '/';
+                }
+            }
+        });
+        
+        // Close detailed view when clicking outside
+        document.getElementById('detailedView').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailedView();
+            }
+        });
+        
+        // Add click handlers to table rows for quick view
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'TD' && !e.target.querySelector('button')) {
+                        const row = e.target.closest('tr');
+                        if (row && row.dataset.index !== undefined) {
+                            viewDetails(parseInt(row.dataset.index));
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Auto-refresh if page is loaded without data but URL suggests results should be shown
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('results') && !sessionStorage.getItem('reconciliationData')) {
+                // Try to get data from localStorage as fallback
+                const data = localStorage.getItem('reconciliationData');
+                if (data) {
+                    sessionStorage.setItem('reconciliationData', data);
+                    window.location.reload();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
